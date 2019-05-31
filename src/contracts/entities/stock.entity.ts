@@ -1,9 +1,9 @@
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
-import { Contracts } from './contracts.entity';
+import { Contract } from './contract.entity';
 
 @Entity()
-@OneToMany(type => Contracts, contract => contract.stockId)
-export class Stocks {
+
+export class Stock {
   @PrimaryGeneratedColumn()
   id: number;
 
@@ -12,4 +12,7 @@ export class Stocks {
 
   @Column()
   numberOfCells: number;
+
+  @OneToMany(type => Contract, contract => contract.stock)
+  contracts: Contract[];
 }

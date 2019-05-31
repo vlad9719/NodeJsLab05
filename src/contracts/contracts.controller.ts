@@ -1,13 +1,15 @@
-import { Controller, Get, Param } from '@nestjs/common';
+import { Controller, Get, Post, Param, Body } from '@nestjs/common';
 import { ContractsService } from './contracts.service';
-import { Contracts } from './entities/contracts.entity';
+import { Contract } from './entities/contract.entity';
+import { CreateContractDto } from './validation/dto/contract.dto';
+import { ContractParams } from './validation/contract.params';
 
-@Controller('api/contracts')
+@Controller('/api/contracts')
 export class ContractsController {
   constructor(private readonly contractsService: ContractsService) {}
 
-  @Get(':renterId/:stockId')
-  findById(@Param('renterId') renterId, @Param('stockId') stockId): Promise<Contracts> {
-    return this.contractsService.findByIds(renterId, stockId);
+  @Post(':renterId/:stockId')
+  add(@Param() params: ContractParams, @Body() createContractDto: CreateContractDto): Promise<Contract> {
+    return this.contractsService.add(params.renterId, params.stockId, createContractDto.rentalCost);
   }
 }

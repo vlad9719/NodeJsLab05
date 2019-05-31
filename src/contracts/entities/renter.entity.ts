@@ -1,12 +1,14 @@
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
-import { Contracts } from './contracts.entity';
+import { Contract } from './contract.entity';
 
 @Entity()
-@OneToMany(type => Contracts, contract => contract.renterId)
-export class Renters {
+export class Renter {
   @PrimaryGeneratedColumn()
   id: number;
 
   @Column()
   name: string;
+
+  @OneToMany(type => Contract, contract => contract.renter)
+  contracts: Contract[];
 }
