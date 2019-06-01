@@ -4,6 +4,7 @@ import { CreateContractDto } from './validation/dto/contract.dto';
 import { ContractParams } from './validation/contract.params';
 import { RenterParams } from './validation/renter.params';
 import { StockParams } from './validation/stock.params';
+import { RecordsParams } from './validation/records.params';
 
 @Controller('/api')
 export class ContractsController {
@@ -43,5 +44,10 @@ export class ContractsController {
           renterContracts: result,
         };
       });
+  }
+
+  @Get('/records/:recordsNumber')
+  getNRecords(@Param() params: RecordsParams): object {
+    return this.contractsService.getNContracts(params.recordsNumber);
   }
 }

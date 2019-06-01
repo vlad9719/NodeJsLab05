@@ -28,7 +28,7 @@ async function seed() {
     username: 'root',
     password: 'root',
     database: 'contracts',
-    entities: ['../contracts/entities/*.entity.ts'],
+    entities: ['./src/database/entities/*.entity.ts'],
     synchronize: true,
   });
 

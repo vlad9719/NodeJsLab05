@@ -115,6 +115,12 @@ export class ContractsService {
     });
   }
 
+  async getNContracts(n: number): Promise<Contract[]> {
+    return this.contractsRepository.find({
+      take: n,
+    });
+  }
+
   async countTotalRentalCostByRenterId(renterId: number): Promise<number> {
     const renter = await this.rentersService.findById(renterId);
     const contracts: Contract[] = await this.contractsRepository.find({
