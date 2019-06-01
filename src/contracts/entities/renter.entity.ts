@@ -1,9 +1,10 @@
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, Index, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { Contract } from './contract.entity';
 
 @Entity()
 export class Renter {
   @PrimaryGeneratedColumn()
+  @Index()
   id: number;
 
   @Column()
