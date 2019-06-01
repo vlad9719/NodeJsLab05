@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Delete, Param, Body } from '@nestjs/common';
+import { Controller, Get, Post, Delete, Param, Body, UseGuards } from '@nestjs/common';
 import { ContractsService } from './contracts.service';
 import { CreateContractDto } from './validation/dto/contract.dto';
 import { ContractParams } from './validation/contract.params';
@@ -6,6 +6,7 @@ import { RenterParams } from './validation/renter.params';
 import { StockParams } from './validation/stock.params';
 import { RecordsParams } from './validation/records.params';
 import { ReportParams } from './validation/report.params';
+import { AuthGuard } from '@nestjs/passport';
 
 @Controller('/api')
 export class ContractsController {
@@ -13,6 +14,7 @@ export class ContractsController {
   }
 
   @Post('/contracts/:renterId/:stockId')
+  @UseGuards(AuthGuard('jwt'))
   add(@Param() params: ContractParams, @Body() createContractDto: CreateContractDto): object {
     return this.contractsService.add(params.renterId, params.stockId, createContractDto.rentalCost)
       .then(result => {
@@ -23,6 +25,7 @@ export class ContractsController {
   }
 
   @Delete('/contracts/:renterId/:stockId')
+  @UseGuards(AuthGuard('jwt'))
   remove(@Param() params: ContractParams): object {
     return this.contractsService.remove(params.renterId, params.stockId)
       .then(result => {

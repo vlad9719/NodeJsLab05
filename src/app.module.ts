@@ -6,9 +6,10 @@ import { ContractsController } from './contracts/contracts.controller';
 import { RentersService } from './renters/renters.service';
 import { StocksService } from './stocks/stocks.service';
 import { ContractsModule } from './contracts/contracts.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
-  imports: [TypeOrmModule.forRoot(), ContractsModule],
+  imports: [TypeOrmModule.forRoot(), ContractsModule, AuthModule],
   controllers: [HealthcheckController, ContractsController],
   providers: [ContractsService, RentersService, StocksService],
 })
