@@ -3,12 +3,12 @@ import { ContractsService } from './contracts.service';
 import { CreateContractDto } from './validation/dto/contract.dto';
 import { ContractParams } from './validation/contract.params';
 
-@Controller('/api/contracts')
+@Controller('/api')
 export class ContractsController {
   constructor(private readonly contractsService: ContractsService) {
   }
 
-  @Post(':renterId/:stockId')
+  @Post('/contracts/:renterId/:stockId')
   add(@Param() params: ContractParams, @Body() createContractDto: CreateContractDto): object {
     return this.contractsService.add(params.renterId, params.stockId, createContractDto.rentalCost)
       .then(result => {
@@ -18,7 +18,7 @@ export class ContractsController {
       });
   }
 
-  @Delete(':renterId/:stockId')
+  @Delete('/contracts/:renterId/:stockId')
   remove(@Param() params: ContractParams): object {
     return this.contractsService.remove(params.renterId, params.stockId)
       .then(result => {
@@ -26,5 +26,10 @@ export class ContractsController {
           removedContract: result,
         };
       });
+  }
+
+  @Get('/stocks/:renterId')
+  getStocksByRenter(@Param() params): object {
+    return this.contractsService.getStocksInformationByRenterId(params.renterId);
   }
 }

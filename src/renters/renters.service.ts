@@ -1,8 +1,12 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Renter } from '../entities/renter.entity';
+import { Renter } from '../database/entities/renter.entity';
 import { Repository } from 'typeorm';
 import { EntityNotFoundError } from 'typeorm/error/EntityNotFoundError';
+import { StocksService } from '../stocks/stocks.service';
+import { ContractsService } from '../contracts/contracts.service';
+import { Contract } from '../database/entities/contract.entity';
+import { Stock } from '../database/entities/stock.entity';
 
 @Injectable()
 export class RentersService {

@@ -1,7 +1,7 @@
 import { createConnection } from 'typeorm';
-import { Contract } from '../contracts/entities/contract.entity';
-import { Renter } from '../contracts/entities/renter.entity';
-import { Stock } from '../contracts/entities/stock.entity';
+import { Contract } from './entities/contract.entity';
+import { Renter } from './entities/renter.entity';
+import { Stock } from './entities/stock.entity';
 import faker = require('faker');
 
 const DEFAULT_NUMBER_OF_RECORDS: number = 1000;

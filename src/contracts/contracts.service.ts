@@ -1,10 +1,12 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, HttpStatus, Injectable, NotAcceptableException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DeleteResult, Repository } from 'typeorm';
-import { Contract } from './entities/contract.entity';
-import { RentersService } from './renters/renters.service';
-import { StocksService } from './stocks/stocks.service';
+import { Repository } from 'typeorm';
+import { Contract } from '../database/entities/contract.entity';
+import { RentersService } from '../renters/renters.service';
+import { StocksService } from '../stocks/stocks.service';
 import { EntityNotFoundError } from 'typeorm/error/EntityNotFoundError';
+import { Stock } from '../database/entities/stock.entity';
+import { Renter } from '../database/entities/renter.entity';
 
 @Injectable()
 export class ContractsService {
@@ -19,6 +21,10 @@ export class ContractsService {
   async add(renterId: number, stockId: number, rentalCost: number): Promise<Contract> {
     const renter = await this.rentersService.findById(renterId);
     const stock = await this.stocksService.findById(stockId);
+
+    if (!this.stockHasAvailableCells(stock)) {
+      throw new NotAcceptableException(`Stock with id '${stockId}' has no available space`);
+    }
 
     return await this.contractsRepository.save({
       renter,
@@ -45,7 +51,7 @@ export class ContractsService {
       });
 
     return await this.contractsRepository.remove(contract)
-      .then( result => {
+      .then(result => {
         return {
           id: contract.id,
           renter,
@@ -53,5 +59,70 @@ export class ContractsService {
           ...result,
         };
       });
+  }
+
+  async getStocksInformationByRenterId(renterId: number): Promise<object> {
+    const stockContracts = await this.getAllStocksByRenterId(renterId);
+    const totalRentalCost = await this.countTotalRentalCostByRenterId(renterId);
+
+    return {
+      stockContracts,
+      totalRentalCost,
+    };
+  }
+
+  async getAllStocksByRenterId(renterId: number): Promise<object> {
+    const renter = await this.rentersService.findById(renterId);
+
+    const contracts: Contract[] = await this.contractsRepository.find({
+      select: ['id', 'createdAt', 'stock', 'rentalCost'],
+      where: {
+        renter,
+      },
+      relations: ['stock'],
+    });
+
+    return contracts.map(contract => {
+      return {
+        contractId: contract.id,
+        stockId: contract.stock.id,
+        stockName: contract.stock.name,
+        rentalCost: contract.rentalCost,
+      };
+    });
+  }
+
+  async countTotalRentalCostByRenterId(renterId: number): Promise<number> {
+    const renter = await this.rentersService.findById(renterId);
+    const contracts: Contract[] = await this.contractsRepository.find( {
+      renter,
+    });
+
+    let total: number = 0;
+
+    contracts.forEach(contract => {
+      total += contract.rentalCost;
+    });
+
+    return total;
+  }
+
+  async stockHasAvailableCells(stock: Stock): Promise<boolean> {
+    const numberOfCells = stock.numberOfCells;
+
+    const rentersOfStock: Renter[] = await this.findAllRentersByStock(stock);
+    const numberOfRentersOfStock: number = rentersOfStock.length;
+
+    return numberOfRentersOfStock < numberOfCells;
+  }
+
+  async findAllRentersByStock(stock: Stock): Promise<Renter[]> {
+    const contracts: Contract[] = await this.contractsRepository.find({
+      stock,
+    });
+
+    return contracts.map(contract => {
+      return contract.renter;
+    });
   }
 }
