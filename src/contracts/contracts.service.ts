@@ -71,7 +71,7 @@ export class ContractsService {
     };
   }
 
-  async getAllStocksByRenterId(renterId: number): Promise<object> {
+  async getAllStocksByRenterId(renterId: number): Promise<object[]> {
     const renter = await this.rentersService.findById(renterId);
 
     const contracts: Contract[] = await this.contractsRepository.find({
@@ -88,13 +88,36 @@ export class ContractsService {
         stockId: contract.stock.id,
         stockName: contract.stock.name,
         rentalCost: contract.rentalCost,
+        createdAt: contract.createdAt,
+      };
+    });
+  }
+
+  async getAllRentersByStockId(stockId: number): Promise<object[]> {
+    const stock = await this.stocksService.findById(stockId);
+
+    const contracts: Contract[] = await this.contractsRepository.find({
+      select: ['id', 'createdAt', 'renter', 'rentalCost'],
+      where: {
+        stock,
+      },
+      relations: ['renter'],
+    });
+
+    return contracts.map(contract => {
+      return {
+        contractId: contract.id,
+        renterId: contract.renter.id,
+        renterName: contract.renter.name,
+        rentalCost: contract.rentalCost,
+        createdAt: contract.createdAt,
       };
     });
   }
 
   async countTotalRentalCostByRenterId(renterId: number): Promise<number> {
     const renter = await this.rentersService.findById(renterId);
-    const contracts: Contract[] = await this.contractsRepository.find( {
+    const contracts: Contract[] = await this.contractsRepository.find({
       renter,
     });
 
@@ -108,21 +131,11 @@ export class ContractsService {
   }
 
   async stockHasAvailableCells(stock: Stock): Promise<boolean> {
-    const numberOfCells = stock.numberOfCells;
+    const numberOfCells: number = stock.numberOfCells;
 
-    const rentersOfStock: Renter[] = await this.findAllRentersByStock(stock);
+    const rentersOfStock: object[] = await this.getAllRentersByStockId(stock.id);
     const numberOfRentersOfStock: number = rentersOfStock.length;
 
     return numberOfRentersOfStock < numberOfCells;
-  }
-
-  async findAllRentersByStock(stock: Stock): Promise<Renter[]> {
-    const contracts: Contract[] = await this.contractsRepository.find({
-      stock,
-    });
-
-    return contracts.map(contract => {
-      return contract.renter;
-    });
   }
 }

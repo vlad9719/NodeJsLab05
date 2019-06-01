@@ -2,6 +2,8 @@ import { Controller, Get, Post, Delete, Param, Body } from '@nestjs/common';
 import { ContractsService } from './contracts.service';
 import { CreateContractDto } from './validation/dto/contract.dto';
 import { ContractParams } from './validation/contract.params';
+import { RenterParams } from './validation/renter.params';
+import { StockParams } from './validation/stock.params';
 
 @Controller('/api')
 export class ContractsController {
@@ -29,7 +31,17 @@ export class ContractsController {
   }
 
   @Get('/stocks/:renterId')
-  getStocksByRenter(@Param() params): object {
+  getStocksByRenter(@Param() params: RenterParams): object {
     return this.contractsService.getStocksInformationByRenterId(params.renterId);
+  }
+
+  @Get('/renters/:stockId')
+  getRentersByStock(@Param() params: StockParams): object {
+    return this.contractsService.getAllRentersByStockId(params.stockId)
+      .then(result => {
+        return {
+          renterContracts: result,
+        };
+      });
   }
 }
