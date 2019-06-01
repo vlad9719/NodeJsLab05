@@ -6,7 +6,7 @@ import { RentersService } from '../renters/renters.service';
 import { StocksService } from '../stocks/stocks.service';
 import { EntityNotFoundError } from 'typeorm/error/EntityNotFoundError';
 import { Stock } from '../database/entities/stock.entity';
-import { Renter } from '../database/entities/renter.entity';
+import axios from 'axios';
 
 @Injectable()
 export class ContractsService {
@@ -119,6 +119,22 @@ export class ContractsService {
     return this.contractsRepository.find({
       take: n,
     });
+  }
+
+  async getAverageOfNRequestsForMRecords(numberOfRequests: number, numberOfRecordsPerRequest: number): Promise<object> {
+    const startTime: number = Date.now();
+    for (let i = 0; i < numberOfRequests; i++) {
+      await this.makeRequestForNRecords(numberOfRecordsPerRequest);
+    }
+    const endTime: number = Date.now();
+    const averageRequestTime = ((endTime - startTime) / numberOfRequests).toFixed(2);
+    return {
+      'averageRequestTime (ms)': averageRequestTime,
+    };
+  }
+
+  async makeRequestForNRecords(numberOfRecords: number): Promise<object> {
+    return await axios.get(`http://localhost:3000/api/records/${numberOfRecords}`);
   }
 
   async countTotalRentalCostByRenterId(renterId: number): Promise<number> {

@@ -5,6 +5,7 @@ import { ContractParams } from './validation/contract.params';
 import { RenterParams } from './validation/renter.params';
 import { StockParams } from './validation/stock.params';
 import { RecordsParams } from './validation/records.params';
+import { ReportParams } from './validation/report.params';
 
 @Controller('/api')
 export class ContractsController {
@@ -49,5 +50,10 @@ export class ContractsController {
   @Get('/records/:recordsNumber')
   getNRecords(@Param() params: RecordsParams): object {
     return this.contractsService.getNContracts(params.recordsNumber);
+  }
+
+  @Get('/average-time-report/:numberOfRequests/:numberOfRecordsPerRequest')
+  getAverageRequestTimeReport(@Param() params: ReportParams): object {
+    return this.contractsService.getAverageOfNRequestsForMRecords(params.numberOfRequests, params.numberOfRecordsPerRequest);
   }
 }
