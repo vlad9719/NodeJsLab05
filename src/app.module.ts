@@ -9,7 +9,9 @@ import { ContractsModule } from './contracts/contracts.module';
 import { AuthModule } from './auth/auth.module';
 
 @Module({
-  imports: [TypeOrmModule.forRoot(), ContractsModule, AuthModule],
+  imports: [TypeOrmModule.forRoot({
+    keepConnectionAlive: true,
+  }), ContractsModule, AuthModule],
   controllers: [HealthcheckController, ContractsController],
   providers: [ContractsService, RentersService, StocksService],
 })
