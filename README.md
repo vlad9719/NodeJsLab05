@@ -84,7 +84,7 @@ You should provide JSON body for this request with required numeric parameter ``
 
 ```
 {
-	"rentalCost": 8930
+	"rentalCost": 3322
 }
 ```
 
@@ -143,7 +143,7 @@ The expected response looks like this:
 }
 ```
 
-Step 4. View all stocks rented by a particular renter with ```GET``` method.
+Step 5. View all stocks rented by a particular renter with ```GET``` method.
 
 The endpoint's URL is as follows:
 
@@ -169,7 +169,7 @@ The expected response looks like this:
 }
 ```
 
-Step 5. View all renters that rented a particular stock using ```renters``` endpoint
+Step 6. View all renters that rented a particular stock using ```renters``` endpoint
 and ```GET``` method
 
 The endpoint's URL is as follows:
@@ -210,7 +210,7 @@ The expected response looks like this:
 }
 ```
 
-Step 6. Check average response time for ```GET```ting 10000 records
+Step 7. Check average response time for ```GET```ting N records
 using ```average-time-report``` endpoint.
 
 The endpoint's URL is as follows:
